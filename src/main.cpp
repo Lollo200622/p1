@@ -8,7 +8,8 @@
 
 using namespace dolomiti::interview::p1;
 
-
+// prima cosa da chiedere chiedere all'utente quanti robot ci sono 
+// fare un power point tutto quello che abbiamo imparto di git 
 
 int
 main(int argc, char **argv)
@@ -30,6 +31,8 @@ main(int argc, char **argv)
     int numost;
     std::cout << "Quanti ostacoli vuoi inserire? ";
     std::cin >> numost;
+
+    
 
     for (int i = 0; i < numost; i++) {
         std::cout << "Inserisci la posizione dell'ostacolo\n"<< i+1;
@@ -152,7 +155,8 @@ main(int argc, char **argv)
             }
 
             robot.muovererobot(move);
-            mappa.Set(StatoCella::VUOTA, p);  
+            mappa.Set(StatoCella::TRAIL1, p); 
+           // mappa.Set(StatoCella::VUOTA, p);  
             mappa.Set(StatoCella::ROBOT1, robot.posizione());  
         }
 
@@ -175,7 +179,8 @@ main(int argc, char **argv)
             }
 
             robot2.muovererobot(move);
-            mappa.Set(StatoCella::VUOTA, p);  
+             mappa.Set(StatoCella::TRAIL2, p);  
+           // mappa.Set(StatoCella::VUOTA, p);  
             mappa.Set(StatoCella::ROBOT2, robot2.posizione()); 
         }
 
