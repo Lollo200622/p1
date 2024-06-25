@@ -9,7 +9,7 @@ namespace dolomiti::interview::p1 {
 
 
 enum class StatoCella {
-    VUOTA, OSTACOLO, ROBOT1, ROBOT2, TRAIL1, TRAIL2
+    VUOTA, OSTACOLO, ROBOT1, ROBOT2, TRAIL1, ROBOT
 };
 
 std::ostream& operator<<(std::ostream& output, const StatoCella& stato);
