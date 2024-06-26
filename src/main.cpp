@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_set>
-#include <algorithm>
 
 #include "common.hpp"
 #include "grid.hpp"
@@ -25,39 +23,39 @@ std::vector<Position> calcolaPosizioniIntermedie(const Position& start, const Po
     return posizioni;
 }
 
-int main(int argc, char **argv) {
+int main() {
     int n;
     std::cout << "Inserisci la dimensione della griglia: ";
     std::cin >> n;
 
     while (n <= 0) {
-        std::cout << "Inserisci la dimensione della griglia: ";
+        std::cout << "Dimensione della griglia non valida. Reinserisci: ";
         std::cin >> n;
     }
 
     Grid mappa(n);
 
-    int numost;
+    int numOstacoli;
     std::cout << "Quanti ostacoli vuoi inserire? ";
-    std::cin >> numost;
+    std::cin >> numOstacoli;
 
-    for (int i = 0; i < numost; i++) {
+    for (int i = 0; i < numOstacoli; ++i) {
         std::cout << "Inserisci la posizione dell'ostacolo " << i + 1 << "\n";
-        int x1, y1;
+        int x, y;
         std::cout << "X: ";
-        std::cin >> x1;
+        std::cin >> x;
         std::cout << "Y: ";
-        std::cin >> y1;
+        std::cin >> y;
 
-        while (mappa.posizioneNonValida(Position(x1, y1))) {
-            std::cout << "Posizione non valida. Inserisci di nuovo.\n";
+        while (mappa.posizioneNonValida(Position(x, y))) {
+            std::cout << "Posizione non valida. Reinserisci.\n";
             std::cout << "X: ";
-            std::cin >> x1;
+            std::cin >> x;
             std::cout << "Y: ";
-            std::cin >> y1;
+            std::cin >> y;
         }
 
-        mappa.Set(StatoCella::OSTACOLO, Position(x1, y1));
+        mappa.Set(StatoCella::OSTACOLO, Position(x, y));
     }
 
     int numRobots;
@@ -65,8 +63,6 @@ int main(int argc, char **argv) {
     std::cin >> numRobots;
 
     std::vector<Robot> robots;
-    std::vector<int> robotNumbers;
-    std::vector<int> robotSpeeds;
 
     for (int i = 0; i < numRobots; ++i) {
         std::cout << "Inserisci la posizione iniziale del robot " << i + 1 << "\n";
@@ -77,38 +73,32 @@ int main(int argc, char **argv) {
         std::cin >> y;
 
         while (mappa.posizioneNonValida(Position(x, y)) || mappa.occupata(Position(x, y))) {
-            std::cout << "Posizione del robot non valida. Inserisci di nuovo.\n";
+            std::cout << "Posizione del robot non valida. Reinserisci.\n";
             std::cout << "X: ";
             std::cin >> x;
             std::cout << "Y: ";
             std::cin >> y;
         }
 
-        int robotNumber;
-        std::cout << "Inserisci il numero per il robot " << i + 1 << " (>= 5): ";
-        std::cin >> robotNumber;
+        char id;
+        std::cout << "Inserisci l'ID per il robot " << i + 1 ;
+        std::cin >> id;
 
-        while (robotNumber < 5) {
-            std::cout << "Il numero del robot deve essere maggiore o uguale a 5. Inserisci di nuovo: ";
-            std::cin >> robotNumber;
-        }
-
-        int robotSpeed;
+       
+        int speed;
         std::cout << "Inserisci la velocità del robot " << i + 1 << ": ";
-        std::cin >> robotSpeed;
+        std::cin >> speed;
 
-        while (robotSpeed <= 0) {
-            std::cout << "La velocità del robot deve essere maggiore di 0. Inserisci di nuovo: ";
-            std::cin >> robotSpeed;
+        while (speed <= 0) {
+            std::cout << "La velocità del robot deve essere maggiore di 0. Reinserisci: ";
+            std::cin >> speed;
         }
 
-        robots.emplace_back(x, y);
-        robotNumbers.push_back(robotNumber); 
-        robotSpeeds.push_back(robotSpeed);
-        mappa.Set(StatoCella(robotNumber), Position(x, y));
+        robots.emplace_back(x, y, id, speed);
+        mappa.Set(StatoCella(id), Position(x, y));
     }
 
-    std::cout << "Grid iniziale:" << std::endl;
+    std::cout << "Griglia iniziale:" << std::endl;
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             std::cout << mappa.GetValue(Position(j, i)) << " ";
@@ -132,55 +122,77 @@ int main(int argc, char **argv) {
     for (int i = 0; i < maxMoves; ++i) {
         for (int j = 0; j < numRobots; ++j) {
             if (i < moves[j].length()) {
-                char move = moves[j][i];
+                char moveChar = moves[j][i];
+                Move move;
+                if (moveChar == 'R') {
+                    move = Move::RIGHT;
+                } else if (moveChar == 'L') {
+                    move = Move::LEFT;
+                } else if (moveChar == 'U') {
+                    move = Move::UP;
+                } else if (moveChar == 'D') {
+                    move = Move::DOWN;
+                } else if (moveChar == 'S') {
+                    move = Move::STAY;
+                } else {
+                    continue; // Ignora movimenti non validi
+                }
+
                 Position p = robots[j].posizione();
-                Position f = posizionefutura(p, move, robotSpeeds[j]);
+                Position f = robots[j].posizioneFutura(move);
 
                 if (mappa.posizioneNonValida(f)) {
-                    std::cout << "Il robot " << robotNumbers[j] << " è fuori dalla griglia." << std::endl;
+                    std::cout << "Il robot " << robots[j].getID() << " è fuori dalla griglia." << std::endl;
                     continue;
                 }
                 if (mappa.ostacolo(f)) {
-                    std::cout << "Il robot " << robotNumbers[j] << " incontra un ostacolo." << std::endl;
+                    std::cout << "Il robot " << robots[j].getID() << " incontra un ostacolo." << std::endl;
                     continue;
                 }
 
                 bool collision = false;
                 for (int k = 0; k < numRobots; ++k) {
                     if (k != j && posizioneUguale(robots[k].posizione(), f)) {
-                        std::cout << "Il robot " << robotNumbers[j] << " incontra il robot " << robotNumbers[k] << "." << std::endl;
+                        std::cout << "Il robot " << robots[j].getID() << " incontra il robot " << robots[k].getID() << "." << std::endl;
                         collision = true;
                         break;
                     }
                 }
 
-                std::vector<Position> posizioniIntermedie = calcolaPosizioniIntermedie(p, f, robotSpeeds[j]);
-                 bool movimentoValido = true;
-                for (const auto& posIntermedia : posizioniIntermedie) {
-                    if (mappa.ostacolo(posIntermedia) || mappa.occupata(posIntermedia)) {
-                        std::cout << "Il robot " << robotNumbers[j] << " incontra un ostacolo o un altro robot nella posizione intermedia." << std::endl;
+                std::vector<Position> posizioniIntermedie = calcolaPosizioniIntermedie(p, f, robots[j].getSpeed());
+
+                for (const auto& pos : posizioniIntermedie) {
+                    if (mappa.ostacolo(pos)) {
+                        std::cout << "Il robot " << robots[j].getID() << " incontra un ostacolo durante il movimento." << std::endl;
                         collision = true;
-                        movimentoValido = false;
+                        break;
+                    }
+                    for (int k = 0; k < numRobots; ++k) {
+                        if (k != j && posizioneUguale(robots[k].posizione(), pos)) {
+                            std::cout << "Il robot " << robots[j].getID() << " incontra il robot " << robots[k].getID() << " durante il movimento." << std::endl;
+                            collision = true;
+                            break;
+                        }
+                    }
+                    if (collision) {
                         break;
                     }
                 }
 
-               
                 
-               // if (collision) continue;
-                if (!collision) {
+               if (!collision) {
                     for (const auto& posIntermedia : posizioniIntermedie) {
                     mappa.Set(StatoCella::TRAIL1, posIntermedia);
                 }
-                robots[j].muovererobot(move, robotSpeeds[j]);
+                  robots[j].muovereRobot(move);
                mappa.Set(StatoCella::TRAIL1, p);
-               mappa.Set(StatoCella(robotNumbers[j]), robots[j].posizione()); 
+               mappa.Set(StatoCella(robots[j].getID()), f);
            }
             }
         }
     }
 
-    std::cout << "Grid finale:" << std::endl;
+    std::cout << "Griglia finale:" << std::endl;
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             std::cout << mappa.GetValue(Position(j, i)) << " ";
@@ -190,7 +202,7 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < numRobots; ++i) {
         Position finale = robots[i].posizione();
-        std::cout << "Posizione finale del robot " << robotNumbers[i] << ": " << finale.x << "," << finale.y << std::endl;
+        std::cout << "Posizione finale del robot " << robots[i].getID() << ": " << finale.x << "," << finale.y << std::endl;
     }
 
     return 0;

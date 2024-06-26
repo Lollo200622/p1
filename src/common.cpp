@@ -28,25 +28,7 @@ CanReachDestination(const Position &, const std::vector<Move> &, const Grid &)
     // TODO
     return false;
 }
-Position posizionefutura(Position fut, char mos, int s){
-	 if(mos == 'R'){
-    	fut.x = fut.x + s;
-    }
-    else if(mos == 'L'){
-    	fut.x = fut.x - s;
-    }
-    else if(mos == 'U'){
-    	fut.y = fut.y - s;
-    }
-    else if(mos == 'D'){
-    	fut.y = fut.y + s;
-    }
-    else if(mos == 'S'){
-        fut.y = fut.y;
-        fut.x = fut .x;
-    }
-    return fut;
-}
+
 
 
 

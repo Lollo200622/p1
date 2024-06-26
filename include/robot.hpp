@@ -3,23 +3,34 @@
 
 #include "common.hpp"
 
-namespace dolomiti::interview::p1{
+namespace dolomiti::interview::p1 {
 
-	class Robot{
+    class Robot {
+    public:
+        Robot(int x, int y, int id, int speed);
 
-	public: 
-		Robot(int x, int y);
-		void riempiposizione(int x,int y);
-		
-		void muovererobot(char mossa, int s);
-		Position posizione();
-		
+        void riempiPosizione(int x, int y);
+        Position posizione() const;
+        void muovereRobot(Move move);
+        Position posizioneFutura(Move move) const;
+        int getID() const;
+        int getSpeed() const;
 
-
-	private:
- 		Position posa;
-};
-
+    private:
+        Position posa;
+        int id;
+        int speed;
+    };
+ /* if (!collision) {
+                    for (const auto& posIntermedia : posizioniIntermedie) {
+                    mappa.Set(StatoCella::TRAIL1, posIntermedia);
+                }
+                  robots[j].muovereRobot(move);
+               mappa.Set(StatoCella::TRAIL1, p);
+               mappa.Set(StatoCella(robots[j].getID()), f);
+           }*/
 }
 
-#endif
+#endif // ROBOT_HPP
+
+

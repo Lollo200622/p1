@@ -15,7 +15,8 @@ enum class Move : char
     RIGHT = 'R',
     LEFT = 'L',
     UP = 'U',
-    DOWN = 'D'
+    DOWN = 'D',
+    STAY = 'S'
 };
 
 struct Position
@@ -28,7 +29,7 @@ struct Position
     int y{ 0 };
 };
 
-Position posizionefutura(Position fut, char mos, int s);
+//Position posizionefutura(Position fut, char mos, int s);
 
 
 Position EstimateFinalPosition(const Position &, const std::vector<Move> &, const Grid&);

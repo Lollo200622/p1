@@ -1,54 +1,59 @@
 #include "robot.hpp"
-#include <iostream>
+
+//al posto di char mossa mettere enum 
+// posizione futura la deve fare il robot 
+// il robot deve conoscere la sua velocità, e il suo ID 
+// creare gliglia dinamica, il robot può andare dove vuole quindi può
+
+namespace dolomiti::interview::p1 {
+
+    Robot::Robot(int x, int y, int id, int speed)
+        : posa(x, y), id(id), speed(speed) {}
+
+    void Robot::riempiPosizione(int x, int y) {
+        posa = Position(x, y);
+    }
+
+    Position Robot::posizione() const {
+        return posa;
+    }
 
 
-namespace dolomiti::interview::p1{
+    void Robot::muovereRobot(Move move) {
+        if (move == Move::RIGHT) {
+            posa.x += speed;
+        } else if (move == Move::LEFT) {
+            posa.x -= speed;
+        } else if (move == Move::UP) {
+            posa.y -= speed;
+        } else if (move == Move::DOWN) {
+            posa.y += speed;
+        } else if (move == Move::STAY) {
+            
+        }
+    }
 
-	Robot::Robot(int x,int y) {
-		posa.x =x;
-		posa.y =y;
-	}
+    Position Robot::posizioneFutura(Move move) const {
+        Position future = posa;
+        if (move == Move::RIGHT) {
+            future.x += speed;
+        } else if (move == Move::LEFT) {
+            future.x -= speed;
+        } else if (move == Move::UP) {
+            future.y -= speed;
+        } else if (move == Move::DOWN) {
+            future.y += speed;
+        } else if (move == Move::STAY) {
+           
+        }
+        return future;
+    }
+    int Robot::getID() const {
+        return id;
+    }
 
+    int Robot::getSpeed() const {
+        return speed;
+    }
 
-	void Robot::riempiposizione(int x,int y){
-		posa = Position(x,y);
-
-	}
-	
-
-	
-	
-
-	Position Robot::posizione(){
-		return posa;
-	}
-
-	
-
-	void Robot::muovererobot(char mossa, int s){
-
-	    if(mossa == 'R'){
-	    	posa.x = posa.x + s;
-	    }
-	    else if(mossa == 'L'){
-	    	posa.x = posa.x - s;
-	    }
-	    else if(mossa == 'U'){
-	    	posa.y = posa.y - s;
-	    }
-	    else if(mossa == 'D'){
-	    	posa.y = posa.y + s;
-	    }
-	    else if(mossa == 'S'){
-	    	posa.y = posa.y;
-	    	posa.x = posa.x;
-	    }
-
-
-	}
-
-
-
-
-
-}
+} // namespace dolomiti::interview::p1
