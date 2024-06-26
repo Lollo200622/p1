@@ -25,19 +25,19 @@ namespace dolomiti::interview::p1{
 
 	
 
-	void Robot::muovererobot(char mossa){
+	void Robot::muovererobot(char mossa, int s){
 
 	    if(mossa == 'R'){
-	    	posa.x = posa.x + 1;
+	    	posa.x = posa.x + s;
 	    }
 	    else if(mossa == 'L'){
-	    	posa.x = posa.x - 1;
+	    	posa.x = posa.x - s;
 	    }
 	    else if(mossa == 'U'){
-	    	posa.y = posa.y - 1;
+	    	posa.y = posa.y - s;
 	    }
 	    else if(mossa == 'D'){
-	    	posa.y = posa.y + 1;
+	    	posa.y = posa.y + s;
 	    }
 	    else if(mossa == 'S'){
 	    	posa.y = posa.y;

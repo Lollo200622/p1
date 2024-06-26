@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <algorithm>
 
 #include "common.hpp"
 #include "grid.hpp"
@@ -11,6 +12,17 @@ using namespace dolomiti::interview::p1;
 
 bool posizioneUguale(const Position& a, const Position& b) {
     return a.x == b.x && a.y == b.y;
+}
+
+std::vector<Position> calcolaPosizioniIntermedie(const Position& start, const Position& end, int speed) {
+    std::vector<Position> posizioni;
+    int dx = (end.x - start.x) / speed;
+    int dy = (end.y - start.y) / speed;
+
+    for (int i = 1; i < speed; ++i) {
+        posizioni.push_back(Position(start.x + i * dx, start.y + i * dy));
+    }
+    return posizioni;
 }
 
 int main(int argc, char **argv) {
@@ -54,6 +66,7 @@ int main(int argc, char **argv) {
 
     std::vector<Robot> robots;
     std::vector<int> robotNumbers;
+    std::vector<int> robotSpeeds;
 
     for (int i = 0; i < numRobots; ++i) {
         std::cout << "Inserisci la posizione iniziale del robot " << i + 1 << "\n";
@@ -80,12 +93,22 @@ int main(int argc, char **argv) {
             std::cin >> robotNumber;
         }
 
+        int robotSpeed;
+        std::cout << "Inserisci la velocità del robot " << i + 1 << ": ";
+        std::cin >> robotSpeed;
+
+        while (robotSpeed <= 0) {
+            std::cout << "La velocità del robot deve essere maggiore di 0. Inserisci di nuovo: ";
+            std::cin >> robotSpeed;
+        }
+
         robots.emplace_back(x, y);
         robotNumbers.push_back(robotNumber); 
+        robotSpeeds.push_back(robotSpeed);
         mappa.Set(StatoCella(robotNumber), Position(x, y));
     }
 
-       std::cout << "Grid :" << std::endl;
+    std::cout << "Grid iniziale:" << std::endl;
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             std::cout << mappa.GetValue(Position(j, i)) << " ";
@@ -111,7 +134,7 @@ int main(int argc, char **argv) {
             if (i < moves[j].length()) {
                 char move = moves[j][i];
                 Position p = robots[j].posizione();
-                Position f = posizionefutura(p, move);
+                Position f = posizionefutura(p, move, robotSpeeds[j]);
 
                 if (mappa.posizioneNonValida(f)) {
                     std::cout << "Il robot " << robotNumbers[j] << " è fuori dalla griglia." << std::endl;
@@ -121,6 +144,7 @@ int main(int argc, char **argv) {
                     std::cout << "Il robot " << robotNumbers[j] << " incontra un ostacolo." << std::endl;
                     continue;
                 }
+
                 bool collision = false;
                 for (int k = 0; k < numRobots; ++k) {
                     if (k != j && posizioneUguale(robots[k].posizione(), f)) {
@@ -129,11 +153,29 @@ int main(int argc, char **argv) {
                         break;
                     }
                 }
-                if (collision) continue;
 
-                robots[j].muovererobot(move);
-                mappa.Set(StatoCella::TRAIL1, p);
-                mappa.Set(StatoCella(robotNumbers[j]), robots[j].posizione()); 
+                std::vector<Position> posizioniIntermedie = calcolaPosizioniIntermedie(p, f, robotSpeeds[j]);
+                 bool movimentoValido = true;
+                for (const auto& posIntermedia : posizioniIntermedie) {
+                    if (mappa.ostacolo(posIntermedia) || mappa.occupata(posIntermedia)) {
+                        std::cout << "Il robot " << robotNumbers[j] << " incontra un ostacolo o un altro robot nella posizione intermedia." << std::endl;
+                        collision = true;
+                        movimentoValido = false;
+                        break;
+                    }
+                }
+
+               
+                
+               // if (collision) continue;
+                if (!collision) {
+                    for (const auto& posIntermedia : posizioniIntermedie) {
+                    mappa.Set(StatoCella::TRAIL1, posIntermedia);
+                }
+                robots[j].muovererobot(move, robotSpeeds[j]);
+               mappa.Set(StatoCella::TRAIL1, p);
+               mappa.Set(StatoCella(robotNumbers[j]), robots[j].posizione()); 
+           }
             }
         }
     }

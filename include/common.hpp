@@ -28,7 +28,7 @@ struct Position
     int y{ 0 };
 };
 
-Position posizionefutura(Position fut, char mos);
+Position posizionefutura(Position fut, char mos, int s);
 
 
 Position EstimateFinalPosition(const Position &, const std::vector<Move> &, const Grid&);

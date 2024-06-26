@@ -11,7 +11,7 @@ namespace dolomiti::interview::p1{
 		Robot(int x, int y);
 		void riempiposizione(int x,int y);
 		
-		void muovererobot(char mossa);
+		void muovererobot(char mossa, int s);
 		Position posizione();
 		
 
