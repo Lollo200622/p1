@@ -34,6 +34,8 @@ namespace dolomiti::interview::p1 {
         bool ostacolo(Position pos) const;
         bool stessaposizionerobot(Position pos) const;
         bool stessacella(Position pos) const;
+         void ExpandGrid(const Position& newPos, StatoCella value);
+         void Print() const;
 
     private:
 
@@ -47,6 +49,7 @@ namespace dolomiti::interview::p1 {
 
         int numero; 
         std::vector<std::vector<Cell>> cells_;
+        
     };
 
 } 

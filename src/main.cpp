@@ -80,11 +80,6 @@ int main() {
             std::cin >> y;
         }
 
-        char id;
-        std::cout << "Inserisci l'ID per il robot " << i + 1 ;
-        std::cin >> id;
-
-       
         int speed;
         std::cout << "Inserisci la velocità del robot " << i + 1 << ": ";
         std::cin >> speed;
@@ -94,17 +89,14 @@ int main() {
             std::cin >> speed;
         }
 
-        robots.emplace_back(x, y, id, speed);
-        mappa.Set(StatoCella(id), Position(x, y));
+      
+        char automaticID = '0' + (i + 1);
+        robots.emplace_back(x, y, automaticID, speed);
+        mappa.Set(StatoCella(automaticID), Position(x, y));
     }
 
     std::cout << "Griglia iniziale:" << std::endl;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            std::cout << mappa.GetValue(Position(j, i)) << " ";
-        }
-        std::cout << std::endl;
-    }
+    mappa.Print();
 
     std::vector<std::string> moves(numRobots);
     for (int i = 0; i < numRobots; ++i) {
@@ -113,7 +105,7 @@ int main() {
     }
 
     int maxMoves = 0;
-    for (const auto &moveStr : moves) {
+    for (const auto& moveStr : moves) {
         if (moveStr.length() > maxMoves) {
             maxMoves = moveStr.length();
         }
@@ -135,16 +127,16 @@ int main() {
                 } else if (moveChar == 'S') {
                     move = Move::STAY;
                 } else {
-                    continue; // Ignora movimenti non validi
+                    continue; 
                 }
 
                 Position p = robots[j].posizione();
                 Position f = robots[j].posizioneFutura(move);
 
                 if (mappa.posizioneNonValida(f)) {
-                    std::cout << "Il robot " << robots[j].getID() << " è fuori dalla griglia." << std::endl;
-                    continue;
+                    mappa.ExpandGrid(f, StatoCella());
                 }
+
                 if (mappa.ostacolo(f)) {
                     std::cout << "Il robot " << robots[j].getID() << " incontra un ostacolo." << std::endl;
                     continue;
@@ -179,26 +171,23 @@ int main() {
                     }
                 }
 
-                
-               if (!collision) {
+                if (!collision) {
                     for (const auto& posIntermedia : posizioniIntermedie) {
-                    mappa.Set(StatoCella::TRAIL1, posIntermedia);
+                        mappa.Set(StatoCella::TRAIL1, posIntermedia);
+                    }
+                    robots[j].muovereRobot(move);
+                    mappa.Set(StatoCella::TRAIL1, p);
+                    mappa.Set(StatoCella(robots[j].getID()), f);
+
+                    
+                    
                 }
-                  robots[j].muovereRobot(move);
-               mappa.Set(StatoCella::TRAIL1, p);
-               mappa.Set(StatoCella(robots[j].getID()), f);
-           }
             }
         }
     }
 
     std::cout << "Griglia finale:" << std::endl;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            std::cout << mappa.GetValue(Position(j, i)) << " ";
-        }
-        std::cout << std::endl;
-    }
+    mappa.Print();
 
     for (int i = 0; i < numRobots; ++i) {
         Position finale = robots[i].posizione();

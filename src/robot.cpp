@@ -8,7 +8,9 @@
 namespace dolomiti::interview::p1 {
 
     Robot::Robot(int x, int y, int id, int speed)
-        : posa(x, y), id(id), speed(speed) {}
+        : posa(x, y), id(id), speed(speed) {
+            
+        }
 
     void Robot::riempiPosizione(int x, int y) {
         posa = Position(x, y);

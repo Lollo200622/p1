@@ -11,7 +11,7 @@ std::ostream& operator<<(std::ostream& output, const StatoCella& stato) {
 Grid::Grid(int size) : cells_(size, std::vector<Cell>(size, StatoCella::VUOTA)), numero(size) {}
 
 void Grid::Set(StatoCella value, const Position& pos) {
-    cells_[pos.x][pos.y].value = value;
+    cells_[pos.x ][pos.y ].value = value;
 }
 
 StatoCella Grid::GetValue(const Position& pos) const {
@@ -37,6 +37,39 @@ bool Grid::stessaposizionerobot(Position pos) const {
 bool Grid::stessacella(Position pos) const {
     StatoCella value = GetValue(pos);
     return value == StatoCella::ROBOT1 || value == StatoCella::ROBOT2 || value == StatoCella::TRAIL1 || value == StatoCella::TRAIL2;
+}
+
+void Grid::ExpandGrid(const Position& newPos, StatoCella value) {
+    if (posizioneNonValida(newPos)) {
+    
+        int newSize = std::max(newPos.x + 1, newPos.y + 1);
+
+       
+        std::vector<std::vector<Cell>> newCells(newSize, std::vector<Cell>(newSize, StatoCella::VUOTA));
+
+        
+        for (int i = 0; i < numero; ++i) {
+            for (int j = 0; j < numero; ++j) {
+                newCells[i][j] = cells_[i][j];
+            }
+        }
+
+        
+        cells_ = std::move(newCells);
+        numero = newSize;
+
+        std::cout << "Griglia espansa a dimensione " << newSize << "x" << newSize << "." << std::endl;
+    }
+}
+
+
+void Grid::Print() const {
+    for (int i = 0; i < numero; ++i) {
+        for (int j = 0; j < numero; ++j) {
+            std::cout << GetValue(Position(j, i)) << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 } // namespace dolomiti::interview::p1
