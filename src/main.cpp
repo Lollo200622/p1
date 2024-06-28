@@ -6,6 +6,8 @@
 #include "grid.hpp"
 #include "robot.hpp"
 
+
+
 using namespace dolomiti::interview::p1;
 
 bool posizioneUguale(const Position& a, const Position& b) {
@@ -34,6 +36,19 @@ int main() {
     }
 
     Grid mappa(n);
+     
+    std::cout << "Inserisci le coordinate della nuova origine della griglia:" << std::endl;
+    int newx, newy;
+    std::cout << "X: ";
+    std::cin >> newx;
+    std::cout << "Y: ";
+    std::cin >> newy;
+
+    mappa.setOrigine(Position(newx, newy));
+
+
+    
+    // set map origin
 
     int numOstacoli;
     std::cout << "Quanti ostacoli vuoi inserire? ";
@@ -134,8 +149,10 @@ int main() {
                 Position f = robots[j].posizioneFutura(move);
 
                 if (mappa.posizioneNonValida(f)) {
-                    mappa.ExpandGrid(f, StatoCella());
+                    std::cout << "Il robot " << robots[j].getID() << " sta cercando di muoversi fuori dalla griglia verso la posizione (" << f.x << ", " << f.y << ")." << std::endl;
+                    continue;
                 }
+
 
                 if (mappa.ostacolo(f)) {
                     std::cout << "Il robot " << robots[j].getID() << " incontra un ostacolo." << std::endl;

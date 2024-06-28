@@ -1,12 +1,10 @@
-    
-
 #pragma once
 #ifndef INTERVIEW_GRID_HPP
 #define INTERVIEW_GRID_HPP
 
 #include "common.hpp"
 #include <iostream>
-
+//git stash pop
 //al posto di char mossa mettere enum 
 // posizione futura la deve fare il robot 
 // il robot deve conoscere la sua velocità, e il suo ID 
@@ -36,6 +34,9 @@ namespace dolomiti::interview::p1 {
         bool stessacella(Position pos) const;
          void ExpandGrid(const Position& newPos, StatoCella value);
          void Print() const;
+       
+         void setOrigine(Position origin);
+
 
     private:
 
@@ -49,7 +50,8 @@ namespace dolomiti::interview::p1 {
 
         int numero; 
         std::vector<std::vector<Cell>> cells_;
-        
+            Position origineMappa;
+
     };
 
 } 
